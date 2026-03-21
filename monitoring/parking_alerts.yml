@@ -1,0 +1,37 @@
+groups:
+  - name: parking_alerts
+    rules:
+      - alert: SensorOffline
+        expr: parking_sensor_online == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Sensor {{ $labels.sensor_id }} offline"
+          description: "Sensor in {{ $labels.mall_id }} hasn't reported for 2 minutes"
+
+      - alert: HighOccupancy
+        expr: parking_occupancy_rate_percent > 90
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High occupancy in {{ $labels.mall_id }}"
+          description: "Occupancy above 90% for 5 minutes"
+
+      - alert: SlowEmergencyResponse
+        expr: histogram_quantile(0.95, rate(emergency_response_seconds_bucket[5m])) > 10
+        labels:
+          severity: critical
+        annotations:
+          summary: "Emergency response too slow"
+          description: "95th percentile response time above 10 seconds"
+
+      - alert: LowPredictionAccuracy
+        expr: ml_prediction_accuracy < 70
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "ML model accuracy low"
+          description: "Prediction accuracy below 70% for {{ $labels.model_type }}"

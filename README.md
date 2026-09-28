@@ -1,2 +1,2 @@
-# smart_traffic_system
+# smart_parking_system
 
